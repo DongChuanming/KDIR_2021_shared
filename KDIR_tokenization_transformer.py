@@ -1,9 +1,23 @@
+#This script is designed for transferring the labels assigned on tokens in a sentence tokenized in one way, 
+#to labels assigned on tokens in the same sentence tokenized in another way.
+# for example, we want the annotation on camemBERT tokens in this sentence : 
+#_La(BO) _SARL(IO) _L(EO) U(EO) CI(EO) ANI(EO) _a(BN) _été(IN) _mise(IN) _en(IN) _liquidation(EN) _le(BT) _31(ET) /08/(ET) 2006(ET) .
+#to annnotation on tree-tagger tokenization :
+#La(BO) SARL(IO) LUCIANI(EO) a(BN) été(IN) mise(IN) en(IN) liquidation(EN) le(BT) 31/08/2006(ET) .(O)
+#this means we already have the sentence tokenized in two ways, and we also know the annotation on one of the tokenization
+#The idea is to glue the letters together to form an index string,and correspond each letter to a label, 
+#and this way when the letters reorganized, the labels will be reorganized with them.
+
+#our text is annotated in tsv format, each line contains a word in a sentence and its labels.
+#So the first step is to read the file and extract words of sentences in a list
+#for that we designed a fonction read_conllu_phrases(t,ind), with t for text file name, ind for the colonne
 
 import re
 sep=re.compile("\n\t*\n\t*\n*\t*")
 sac_mot=set()
-#with open("/media/cdong/Elements/these/Projet/Extractor/Data/TRAIN_ONATLIDSU.tsv", "r", encoding="utf-8") as p:    #print(p.read())
 def read_conllu_phrases(t,ind):
+    import re
+    sep=re.compile("\n\t*\n\t*\n*\t*")
     with open(t, "r", encoding="utf-8") as p:
         t=p.read()
         phs=sep.split(t)
