@@ -12,95 +12,12 @@
 #So the first step is to read the file and extract words of sentences in a list
 #for that we designed a fonction read_conllu_phrases(t,ind), with t for text file name, ind for the colonne
 
-import re
-sep=re.compile("\n\t*\n\t*\n*\t*")
+
 sac_mot=set()
-def read_conllu_phrases(t,ind):
+
+def read_conllu(t,ind):
     import re
     sep=re.compile("\n\t*\n\t*\n*\t*")
-    with open(t, "r", encoding="utf-8") as p:
-        t=p.read()
-        phs=sep.split(t)
-        #.split("\n\n")
-        corpus=list()
-        phrases=list()
-        #dpos=dict()
-        for s in phs:
-            phrase=list()
-            #tup1=list()
-            #tup2=list()
-            #tup3=list()
-            for i in range(len(ind)):
-                phrase.append(list())
-            ws=s.split('\n')
-            #print(ws)
-            for w in ws:
-                if len(w.strip("\t"))>0:
-                    if w[0]=="#":
-                        phrases.append(w.strip("#").strip())
-                    if w[0]!="#":
-                        lt=w.split("\t")
-                        for i in range(len(ind)):
-                            index=ind[i]
-                            phrase[i].append(lt[index])
-                        #tup1.append(lt[1])
-                        #sac_mot.add(lt[1])
-                        #tup2.append(lt[8])
-                        #if lt[1].isupper():
-                        #    case=3
-                        #elif lt[1].istitle():
-                        #    case=2
-                        #else:
-                        #    case=1
-                        #tup3.append([])
-                        #if lt[3] in dpos:
-                        #    tup3.append([dpos[lt[3].strip()], case])
-                        #else:
-                        #    tup3.append([29, case])
-            #phrase=(tup1,tup2)
-            #dpos[tuple(tup1)]=tup3
-            if len(phrase[0])>0:
-                #if set(phrase[1])!={"O"}:
-                corpus.append(tuple(phrase))
-        return corpus, phrases
-
-
-# In[9]:
-
-
-corpus, phrases=read_conllu_phrases("/media/cdong/Elements/these/Projet/Extractor/Data/compare_date.tsv", [1,8])
-
-
-# In[11]:
-
-
-import dateparser
-
-
-# In[10]:
-
-
-corpus
-
-
-#  
-
-#  
-
-# 分解词汇到CamemBERT分词方式
-
-#   
-
-#   
-
-# In[1]:
-
-
-import re
-sep=re.compile("\n\t*\n\t*\n*\t*")
-sac_mot=set()
-#with open("/media/cdong/Elements/these/Projet/Extractor/Data/TRAIN_ONATLIDSU.tsv", "r", encoding="utf-8") as p:    #print(p.read())
-def read_conllu(t,ind):
     with open(t, "r", encoding="utf-8") as p:
         t=p.read()
         phs=sep.split(t)
