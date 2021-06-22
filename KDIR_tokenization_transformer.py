@@ -39,8 +39,6 @@
 #for that we designed a fonction read_conllu_phrases(t,ind), with t for text file name, ind for the colonne
 
 
-sac_mot=set()
-
 def read_conllu(t,ind):
     import re
     #we would like to create a list that contains multiple tuples. Each tuple represents a aentence, containing a list of word form, and a list of label
@@ -63,7 +61,7 @@ def read_conllu(t,ind):
             #we seperate each line to make a list of word features
             ws=s.split('\n')
             for w in ws:
-                #we don't want to process the line begins with "#" since it is not a annotation of word
+                #we don't want to process the line that begins with "#" since it is not a annotation of word
                 if len(w.strip("\t"))>0:
                     if w[0]!="#":
                         lt=w.split("\t")
@@ -71,56 +69,18 @@ def read_conllu(t,ind):
                         for i in range(len(ind)):
                             index=ind[i]
                             phrase[i].append(lt[index])
+	    #then the lists that contain word features get reorganised into a tuple, which is then inserted into the list "corpus" created before.
             if len(phrase[0])>0:
-                #if set(phrase[1])!={"O"}:
                 corpus.append(tuple(phrase))
-        return corpus 
-
-
-# In[28]:
-
-
-corpus=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Results/TEST_compare.txt",[1,2,3])
-
-
-# In[29]:
-
-
-len(corpus)
-
-
-# In[30]:
-
-
-count=0
-for a,b,c in corpus:
-    for e in c:
-        if len(e)>1:
-            if e[1]=="T":
-                count+=1
-
-
-# In[31]:
-
-
-count
-
+	#the output is the list corpus
+        return corpus
 
 # In[18]:
-
-
+# we read the annotated corpus with camembert tokenization
 corpus=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Results/token_annot_compare.tsv",[1,2,3])
 
-
-# In[19]:
-
-
-corpus
-
-
 # In[11]:
-
-
+# now the words will be clued together, and each letter will inherate the word's label
 correspondance=list()
 for a,c,d in corpus:
     concat=""
@@ -136,14 +96,15 @@ for a,c,d in corpus:
         concat+=w
         indexe1+=lt
         indexe2+=lp
-        
+    # we insert the clued words and the lists that contain their letters' labels into a list called "correspondance"      
     correspondance.append((concat,indexe1,indexe2))
         
         
 
 
 # In[12]:
-
+# this fonction is designed to solve the problem that if the tokenization changes, the new token may correspond more than one old tokens, and inherit 
+# more than one labels. The solution is to choose the label that covers the most number of letters in the new token. 
 
 def maxelement(l):
     dl=dict()
@@ -162,15 +123,10 @@ def maxelement(l):
 
 
 # In[13]:
+# now the file with the new tokenization is read. This file and the last file contain the same sentences,
+# in the same order, but with different tokenization.
 
-
-tokenized=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Data/part3_dev.tsv",[1,2,3])
-
-
-# In[14]:
-
-
-tokenized
+tokenized=read_conllu("part3_dev.tsv",[1,2,3])
 
 
 # In[15]:
