@@ -8,7 +8,33 @@
 #The idea is to glue the letters together to form an index string,and correspond each letter to a label, 
 #and this way when the letters reorganized, the labels will be reorganized with them.
 
-#our text is annotated in tsv format, each line contains a word in a sentence and its labels.
+#our text is annotated in tsv format, with each line representing a word and its label. The words compose sentences, and each sentence are 
+#seperated from each other with one or more empty line. To illustrate, here are two extracted sentences:
+
+#-----------------------------------------------------------------------------------------------------
+# #- Les derniers déchets ont été éliminés début 2004.
+# 1	-	        O		O
+# 2	Les	        BO		BU
+# 3	derniers	IO		IU
+# 4	déchets	    EO		EU
+# 5	ont	        BN		O
+# 6	été	        IN		O
+# 7	éliminés	EN		O
+# 8	début	    BT		O
+# 9	2004	    ET		O
+# 10.	        O		O
+					
+					
+#1	-	        O		O
+#2	Les	        BO		O
+#3	bâtiments	EO		O
+#4	ont	        BN		O
+#5	été	        IN		O
+#6	démolis	    EN		O
+#7	.	        O		O
+
+#-----------------------------------------------------------------------------------------------------
+
 #So the first step is to read the file and extract words of sentences in a list
 #for that we designed a fonction read_conllu_phrases(t,ind), with t for text file name, ind for the colonne
 
@@ -17,45 +43,34 @@ sac_mot=set()
 
 def read_conllu(t,ind):
     import re
+    #we would like to create a list that contains multiple tuples. Each tuple represents a aentence, containing a list of word form, and a list of label
+    #there for the first step is to seperate the tsv file by sentences. In our file, the sentences are seperated by empty lines,
+    #but given that the file may be edited in google sheet, The empty line in the file may contains tab symbol, so we include tabs in our seperator "sep" 
     sep=re.compile("\n\t*\n\t*\n*\t*")
+    #read file
     with open(t, "r", encoding="utf-8") as p:
         t=p.read()
+        #seperate into a list of sentences
         phs=sep.split(t)
-        #.split("\n\n")
+        #we creat a list 'corpus' to contain the reorganised information of the sentences
         corpus=list()
-        #dpos=dict()
+        #begin to prossess each sentence
         for s in phs:
+            #we create a list 'phrase' to contain the information of the words
             phrase=list()
-            #tup1=list()
-            #tup2=list()
-            #tup3=list()
             for i in range(len(ind)):
                 phrase.append(list())
+            #we seperate each line to make a list of word features
             ws=s.split('\n')
-            #print(ws)
             for w in ws:
+                #we don't want to process the line begins with "#" since it is not a annotation of word
                 if len(w.strip("\t"))>0:
                     if w[0]!="#":
                         lt=w.split("\t")
+                        #we extract the features in columns that we indicated in the "ind"
                         for i in range(len(ind)):
                             index=ind[i]
                             phrase[i].append(lt[index])
-                        #tup1.append(lt[1])
-                        #sac_mot.add(lt[1])
-                        #tup2.append(lt[8])
-                        #if lt[1].isupper():
-                        #    case=3
-                        #elif lt[1].istitle():
-                        #    case=2
-                        #else:
-                        #    case=1
-                        #tup3.append([])
-                        #if lt[3] in dpos:
-                        #    tup3.append([dpos[lt[3].strip()], case])
-                        #else:
-                        #    tup3.append([29, case])
-            #phrase=(tup1,tup2)
-            #dpos[tuple(tup1)]=tup3
             if len(phrase[0])>0:
                 #if set(phrase[1])!={"O"}:
                 corpus.append(tuple(phrase))
