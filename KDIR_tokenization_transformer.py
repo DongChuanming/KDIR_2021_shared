@@ -80,7 +80,7 @@ def read_conllu(t,ind):
 corpus=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Results/token_annot_compare.tsv",[1,2,3])
 
 # In[11]:
-# now the words will be clued together, and each letter will inherate the word's label
+# now the words will be glued together, and each letter will inherate the word's label
 correspondance=list()
 for a,c,d in corpus:
     concat=""
@@ -96,7 +96,7 @@ for a,c,d in corpus:
         concat+=w
         indexe1+=lt
         indexe2+=lp
-    # we insert the clued words and the lists that contain their letters' labels into a list called "correspondance"      
+    # we insert the glued words and the lists that contain their letters' labels into a list called "correspondance"      
     correspondance.append((concat,indexe1,indexe2))
         
         
@@ -125,12 +125,13 @@ def maxelement(l):
 # In[13]:
 # now the file with the new tokenization is read. This file and the last file contain the same sentences,
 # in the same order, but with different tokenization.
-
+# now we read the file of tokenized sentences that we want to assign labels to
 tokenized=read_conllu("part3_dev.tsv",[1,2,3])
 
 
 # In[15]:
-
+# the final step is to correspond the letters in object tokens to the glued letters, and let the former inherit
+# the label of the later, then assign the token with the label that belong to the most of the letters in the token
 
 token_tags=list()
 for i in range(len(correspondance)):
