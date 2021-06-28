@@ -138,15 +138,12 @@ for i in range(len(correspondance)):
     w=tokenized[i][0]
     v1=tokenized[i][1]
     v2=tokenized[i][2]
-    l=correspondance[i][0]
-    
+    l=correspondance[i][0] 
     t1=correspondance[i][1]
     t2=correspondance[i][2]
-    #if 'GRAPH' in l:
-        #print(t2)
     count=0
     for iw in range(len(w)):
-        nw=w[iw].strip("▁")
+        nw=w[iw].strip("▁") # "▁" is a special symbole of CamemBERT, that basically represents a space
         if len(nw)>0:
             #if nw==l[i:i+len(nw)]:
             if count >= len(t1):
