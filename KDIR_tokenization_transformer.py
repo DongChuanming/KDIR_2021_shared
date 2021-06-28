@@ -143,9 +143,10 @@ for i in range(len(correspondance)):
     t2=correspondance[i][2]
     count=0
     for iw in range(len(w)):
-        nw=w[iw].strip("▁") # "▁" is a special symbole of CamemBERT, that basically represents a space
+	# "▁" is a special symbole of CamemBERT, that normally corresponds a space in sentence.  
+	# to extract token from a glued text without space, it's better to exclude all the symbol "▁" 
+        nw=w[iw].strip("▁") 
         if len(nw)>0:
-            #if nw==l[i:i+len(nw)]:
             if count >= len(t1):
                 rt1=maxelement(t1[-1:])
                 rt2=maxelement(t2[-1:])
@@ -155,17 +156,13 @@ for i in range(len(correspondance)):
             else:  
                 rt1=maxelement(t1[count:count+len(nw)])
                 rt2=maxelement(t2[count:count+len(nw)])
-                #if nw=="GRAPH":
-                #    print
-                
+            # once the token corresponds the letters in the glued text, the labels of the letter of each token will be processed by the function maxelement()
+	    # this function will choose the label that occupies most letters in the token (variable rt1 and rt2), and assign it to the token
             v1[iw]=rt1
             v2[iw]=rt2
-            
             count+=len(nw)
-    #print(w)
-    #print(v)
     token_tags.append((w,v1,v2))
-    #print("\n\n")
+# finally we have a list token_tags that contains the new tokens and their tags
         
             
             
@@ -173,76 +170,38 @@ for i in range(len(correspondance)):
 
 
 # In[16]:
+# the new tokens and their tags will be stocked in a tsv file with same format 
 
-
-with open("/media/cdong/Elements/these/Projet/Extractor/Data/Part_3_dev_ONTALIDSU_corrigee_camembert.tsv", "w", encoding="utf-8") as r:
+with open("recombined.tsv", "w", encoding="utf-8") as r:
     for w,v1,v2 in token_tags:
         for i in range(len(w)):
             r.write(str(i+1)+"\t"+w[i]+"\t"+v1[i]+"\t"+v2[i]+"\n")
         r.write("\n\n")
 
-
-# In[97]:
-
-
-stoken=set()
-with open("dic_tokens.txt","w", encoding="utf-8") as d:
-    for a,b in tokenized:
-        for e in a:
-            stoken.add(e)
-    d.write(str(stoken))
-
-
-# In[31]:
-
-
-with open("/media/cdong/Elements/these/Projet/Extractor/correcte_camembert.conllu", "r", encoding="utf-8") as r:
-    with open("/media/cdong/Elements/these/Projet/Extractor/Data/Part_1_2_camembert.tsv", "w", encoding="utf-8") as w:
-        lr=r.readlines()
-        b=0
-        e=0
-        for i in range(len(lr)):
-            #if lr[i].strip()=="#Le site de Champagne sur Seine a accueilli a priori une usine fabriquant du gaz à partir de la distillation de la houille (ce qui devra être confirmé par une étude historique).":
-            #    b=i
-            if lr[i].strip()=='''#Un impact dans les eaux souterraines est toutefois identifiés du coté du quartier Liegard.''':
-                e=i+18
-                break
-        for l in lr[b:e]:
-            w.write(l)
-
-
-# In[ ]:
-
-
-
+	
 
 
 #  
 
-# 合并成词
+# we can also use the same strategy to corrspond a treetagger tokenized sentence to a CamemBERT tokenized sentence
 
-#  
-
-# In[3]:
-
-
-#corpus=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Résultat/Part3_Camembert_IDSU_Automatique.tsv",[1,2])
 
 
 # In[17]:
+# reading the camembert file that contains labels for CamemBERT tokens
 
-
-corpus=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Results/Part3_Camembert_ONTAL_model123_1200_Automatique.tsv",[1,2])
+corpus=read_conllu("Part3_Camembert_ONTAL_model123_1200_Automatique.tsv",[1,2])
 
 
 # In[18]:
-
+# we generate the glued text with CamemBERT tokenized sentences
 
 correspondance=list()
 for a,b in corpus:
     concat=""
     indexe=list()
     for i in range(len(a)):
+	# the symbol "▁" should also be ignored here
         w=a[i].strip("▁")
         t=b[i]
         lw=len(w)
@@ -251,36 +210,16 @@ for a,b in corpus:
         indexe+=lt
         
     correspondance.append((concat,indexe))
-        
-        
-
-
-# In[19]:
-
-
-len(correspondance)
 
 
 # In[20]:
+# reading the file tokenized by tree-tagger
 
-
-tokenized=read_conllu("/media/cdong/Elements/these/Projet/Extractor/Data/part3_dev_combined.tsv",[1,2])
-
-
-# In[21]:
-
-
-len(tokenized)
-
-
-# In[22]:
-
-
-correspondance
+tokenized=read_conllu("part3_dev_combined.tsv",[1,2])
 
 
 # In[23]:
-
+# same way of corresponding tokens to letters, and inheritating their labels
 
 token_tags=list()
 for i in range(len(correspondance)):
@@ -292,7 +231,6 @@ for i in range(len(correspondance)):
     for iw in range(len(w)):
         nw=w[iw].strip("▁")
         if len(nw)>0:
-            #if nw==l[i:i+len(nw)]:
             if count >= len(t):
                 rt=maxelement(t[-1:])
             elif count+len(nw) >= len(t):
@@ -301,30 +239,16 @@ for i in range(len(correspondance)):
                 rt=maxelement(t[count:count+len(nw)])
             v[iw]=rt
             count+=len(nw)
-    #print(w)
-    #print(v)
     token_tags.append((w,v))
-    #print("\n\n")
 
 
 # In[24]:
-
-
-token_tags
-
-
-# In[25]:
-
-
-with open("/media/cdong/Elements/these/Projet/Extractor/Results/Part3_Camembert_ONTAL_model123_1200_Automatique_recombined.tsv",'w',encoding="utf-8") as p:
-    #p.write(str(token_tags))
+# we save the tokenized results in a new file.
+with open("Part3_Camembert_ONTAL_model123_1200_Automatique_recombined.tsv",'w',encoding="utf-8") as p:
     for a,b in token_tags:
         for i in range(len(a)):
             p.write(str(i+1)+"\t"+a[i]+'\t'+b[i]+'\t'+"_"+"\n")
         p.write("\n\n")
-
-
-# In[ ]:
 
 
 
